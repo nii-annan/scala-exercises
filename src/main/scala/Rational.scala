@@ -37,16 +37,16 @@ class Rational(n: Int, d:Int) extends Ordered[Rational]{
     * As you're inside the class you can use the simpified numer and denom from the fields
     */
   def + (that: Rational): Rational = {
-    ???
+     val numer = (this.numer*that.denom) + (this.denom*that.numer)
+    val demon = (this.denom*that.denom)
+    new Rational(numer,demon)
   }
 
   /**
     * This allows for adding an int to a rational without having to convert it to a rational first. It's nicer for our
     * user to be able to do Rational(1,2) + 1 than Rational(1,2) + Rational(1,1)
     */
-  def + (i: Int): Rational = {
-    ???
-  }
+  def + (i: Int): Rational = this + new Rational(i)
 
   /**
     * An addition method for rational numbers, to add them we use the following formula
@@ -55,49 +55,50 @@ class Rational(n: Int, d:Int) extends Ordered[Rational]{
     * Ananologous to + method
     */
   def - (that: Rational): Rational = {
-    ???
+    val numer = (that.numer*that.denom) - (this.denom*that.numer)
+    val denom = this.denom*that.denom
+    new Rational(numer,denom)
   }
 
   /**
     * Analogous to the + method
     */
-  def - (i: Int): Rational = {
-    ???
-  }
+  def - (i: Int): Rational = this - new Rational(i)
 
   /**
-    * An addition method for rational numbers, to add them we use the following formula
+    * A multiplication method for rational numbers, to multiply them we use the following formula
     * a/b * c/d = ac / bd
     *
     * Analogous to + method
     */
   def * (that: Rational): Rational = {
-    ???
+    val numer = this.numer * that.numer
+    val denom = this.denom * that.denom
+    new Rational(numer,denom)
   }
 
   /**
     * Analogous to the + method
     */
-  def * (i: Int): Rational = {
-    ???
-  }
+  def * (i: Int): Rational = this * new Rational(i)
 
   /**
-    * An addition method for rational numbers, to add them we use the following formula
-    * a/b * c/d = ac / bd
+    * A division method for rational numbers, to divide them we use the following formula
+    * (a/b) / (c/d) = ad / bc
     *
-    * Analogous to + method
+    * Analogous to * method
     */
   def / (that: Rational): Rational = {
-    ???
+   val numer = this.numer*that.denom
+  val denom = this.denom*that.numer
+    new Rational(numer,denom)
   }
 
   /**
     * Analogous to the + method
     */
-  def / (i: Int): Rational = {
-    ???
-  }
+  def / (i: Int): Rational = this / new Rational(i)
+
 
   /**
     * gcd returns the greatest common divisor of the values a and b. It's useful here as we can
@@ -108,23 +109,26 @@ class Rational(n: Int, d:Int) extends Ordered[Rational]{
    */
 
   private def gcd(a: Int, b: Int): Int = {
-    ???
+    if (a==0) b
+    else gcd(b%a,a)
   }
 
   /**
-    * The toString method is a default method used for outputting objects as strongs. The normal default here
+    * The toString method is a default method used for outputting objects as strings. The normal default here
     * would give Rational(numer, denom), but this makes it output numer/denom insteaD
     *
     * Use string interpolation to put the parameters in to the string
     */
-  override def toString: String = ???
+  override def toString: String = {
+    s"${numer}/${denom}"}
 
   /**
     * We want to be able to compare two rational numbers. Overriding this method
     * along with implementing ordered interface allows us to use <, >, <=, >=, ==
     */
   override def compare(that:Rational): Int = {
-    ???
+//find lcm and compare numer
+//    speed up by comparing if they are positive or negative
   }
 
   /**
