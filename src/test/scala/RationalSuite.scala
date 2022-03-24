@@ -90,8 +90,8 @@ class RationalSuite extends FunSuite with ScalaCheckSuite{
       // This import could be at the top of the file but it put here to make it
       // clear that it's needed for 1 + r to work.
       import IntUtils.IntExtensions
-      //assert(r + 1 == 1 + r)
-      assert(false) // Replace with assert above when implemented.
+      assert(r + 1 == 1 + r)
+//      assert(false) // Replace with assert above when implemented.
     }
   }
 
