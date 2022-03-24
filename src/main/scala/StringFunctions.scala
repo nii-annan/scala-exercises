@@ -26,9 +26,8 @@ object StringFunctions {
   /**
     * Return the string with append after the string
     */
-  def appendString(str: String, append: String):String = {
-    str.appendedAll(append)
-  }
+  def appendString(str: String, append: String):String = str++append
+
 
   /**
     * Return the string with prepend in front of it
@@ -42,30 +41,53 @@ object StringFunctions {
     * Hint: Watch out for the case where there are capital letters.
     */
   //assumption is the string contains distinct characters
-  def convertToAlphabetical(str:String): String = {
-    val (upperCase,lowerCase) = str.sorted.partition(_.isUpper)
-   if(upperCase.nonEmpty && lowerCase.nonEmpty){
-      val stringList = List(upperCase,lowerCase)
-      val longerLengthCase = stringList.min // longer length is min because the ASCII character for lower case characters is of a higher value
-      val shorterLengthCase = stringList.max // shorter length is max because the ASCII character for upper case characters is of a lower value
+//  def convertToAlphabetical(str:String): String = {
+//    val (upperCase,lowerCase) = str.sorted.partition(_.isUpper)
+//   if(upperCase.nonEmpty && lowerCase.nonEmpty){
+//      val stringList = List(upperCase,lowerCase)
+//      val longerLengthCase = stringList.min // longer length is min because the ASCII character for lower case characters is of a higher value
+//      val shorterLengthCase = stringList.max // shorter length is max because the ASCII character for upper case characters is of a lower value
+//
+//      @tailrec
+//      def helper(longerLengthCase:List[Char], shorterLengthCase:String, results:String):String={
+//
+//        longerLengthCase match {
+//          case head+:tail =>
+//            val headCase = if (head.isUpper)head.toLower
+//            else head.toUpper
+//            val(matched,unmatched) = shorterLengthCase.partition(char => char.equals(headCase))
+//            if(matched.nonEmpty) {
+//              helper(tail,unmatched,results.appendedAll(head.toString.appendedAll(matched).sorted.reverse))
+//            }
+//            else helper(tail,unmatched,results.appendedAll(head.toString))
+//          case Nil => results
+//        }
+//      }
+//      helper(longerLengthCase.toList,shorterLengthCase,"")
+//    }else str.sorted
+//  }
 
-      @tailrec
-      def helper(longerLengthCase:List[Char], shorterLengthCase:String, results:String):String={
+  //easier method but involves the use of mutable DS
+  def convertToAlphabetical(str:String): String ={
+    val strArr = str.split("")
 
-        longerLengthCase match {
-          case head+:tail =>
-            val headCase = if (head.isUpper)head.toLower
-            else head.toUpper
-            val(matched,unmatched) = shorterLengthCase.partition(char => char.equals(headCase))
-            if(matched.nonEmpty) {
-              helper(tail,unmatched,results.appendedAll(head.toString.appendedAll(matched).sorted.reverse))
-            }
-            else helper(tail,unmatched,results.appendedAll(head.toString))
-          case Nil => results
+    def swap(i:Int,j:Int):Unit={
+      var temp = strArr(i)
+      strArr(i)= strArr(j)
+      strArr(j)= temp
+    }
+
+    for (i<-strArr.indices){
+      for (j <- (i + 1) until strArr.length){
+        //equal characters
+        if(strArr(i).toLowerCase.equals(strArr(j).toLowerCase)){
+          if(strArr(i)<strArr(j)) swap(i,j)
+        }else {
+          if(strArr(i).toLowerCase > (strArr(j).toLowerCase)) swap(i,j)
         }
       }
-      helper(longerLengthCase.toList,shorterLengthCase,"")
-    }else str.sorted
+    }
+strArr.mkString
   }
 
   /**
