@@ -12,13 +12,13 @@ import scala.annotation.tailrec
 
   Note: A rational number is any number that can be written in the form n/d where d!= 0
  */
-class Rational(n: Int, d:Int) extends Ordered[Rational]{
+class Rational(n: Int, d: Int) extends Ordered[Rational] {
   // The require keyword is used to check for pre-conditions, we use it here to stop anyone being able to create
   // a rational number with d = 0 as that doesn't make any sense
   require(d != 0)
 
   /** Create a val holding the greatest common divisor, abs is used to make sure we always get a positive gcd */
-  private val g = gcd(n.abs, d.abs)
+  private val g: Int = gcd(n.abs, d.abs)
 
   // Create fields holding the numerator and denomiator in simplified form.
   val numer: Int = n / g
@@ -30,23 +30,30 @@ class Rational(n: Int, d:Int) extends Ordered[Rational]{
    */
   def this(n: Int) = this(n, 1)
 
+  /** method for calculating lcm of two rational numbers */
+  def lcm(that: Rational): Int = {
+    (this.denom / gcd(this.denom, that.denom)) * that.denom
+  }
+
   /**
     * An addition method for rational numbers, to add them we use the following formula
     * a/b + c/d = ad + bc / bd
     *
     * As you're inside the class you can use the simpified numer and denom from the fields
     */
-  def + (that: Rational): Rational = {
-     val numer = (this.numer*that.denom) + (this.denom*that.numer)
-    val demon = (this.denom*that.denom)
-    new Rational(numer,demon)
+  def +(that: Rational): Rational = {
+    val l = lcm(that)
+    val a: Int = (l / this.denom) * this.numer
+    val b: Int = (l / that.denom) * that.numer
+    val numer = a + b
+    new Rational(numer, l)
   }
 
   /**
     * This allows for adding an int to a rational without having to convert it to a rational first. It's nicer for our
     * user to be able to do Rational(1,2) + 1 than Rational(1,2) + Rational(1,1)
     */
-  def + (i: Int): Rational = this + new Rational(i)
+  def +(i: Int): Rational = this + new Rational(i)
 
   /**
     * An addition method for rational numbers, to add them we use the following formula
@@ -54,16 +61,18 @@ class Rational(n: Int, d:Int) extends Ordered[Rational]{
     *
     * Ananologous to + method
     */
-  def - (that: Rational): Rational = {
-    val numer = (that.numer*that.denom) - (this.denom*that.numer)
-    val denom = this.denom*that.denom
-    new Rational(numer,denom)
+  def -(that: Rational): Rational = {
+    val l = lcm(that)
+    val a: Int = (l / this.denom) * this.numer
+    val b: Int = (l / that.denom) * that.numer
+    val numer = a - b
+    new Rational(numer, l)
   }
 
   /**
     * Analogous to the + method
     */
-  def - (i: Int): Rational = this - new Rational(i)
+  def -(i: Int): Rational = this - new Rational(i)
 
   /**
     * A multiplication method for rational numbers, to multiply them we use the following formula
@@ -71,16 +80,16 @@ class Rational(n: Int, d:Int) extends Ordered[Rational]{
     *
     * Analogous to + method
     */
-  def * (that: Rational): Rational = {
+  def *(that: Rational): Rational = {
     val numer = this.numer * that.numer
     val denom = this.denom * that.denom
-    new Rational(numer,denom)
+    new Rational(numer, denom)
   }
 
   /**
     * Analogous to the + method
     */
-  def * (i: Int): Rational = this * new Rational(i)
+  def *(i: Int): Rational = this * new Rational(i)
 
   /**
     * A division method for rational numbers, to divide them we use the following formula
@@ -88,16 +97,16 @@ class Rational(n: Int, d:Int) extends Ordered[Rational]{
     *
     * Analogous to * method
     */
-  def / (that: Rational): Rational = {
-   val numer = this.numer*that.denom
-  val denom = this.denom*that.numer
-    new Rational(numer,denom)
+  def /(that: Rational): Rational = {
+    val numer = this.numer * that.denom
+    val denom = this.denom * that.numer
+    new Rational(numer, denom)
   }
 
   /**
     * Analogous to the + method
     */
-  def / (i: Int): Rational = this / new Rational(i)
+  def /(i: Int): Rational = this / new Rational(i)
 
 
   /**
@@ -105,12 +114,12 @@ class Rational(n: Int, d:Int) extends Ordered[Rational]{
     * use it to simpify rational numbers to their simplest form, i.e. 3/6 = 1/2
     *
     * The method is 'private' so it isn't available outside of the Rational class.
-    *  Hint: Use recursion
-   */
+    * Hint: Use recursion
+    */
 
   private def gcd(a: Int, b: Int): Int = {
-    if (a==0) b
-    else gcd(b%a,a)
+    if (a == 0) b
+    else gcd(b % a, a)
   }
 
   /**
@@ -120,15 +129,18 @@ class Rational(n: Int, d:Int) extends Ordered[Rational]{
     * Use string interpolation to put the parameters in to the string
     */
   override def toString: String = {
-    s"${numer}/${denom}"}
+    s"${numer}/${denom}"
+  }
 
   /**
     * We want to be able to compare two rational numbers. Overriding this method
     * along with implementing ordered interface allows us to use <, >, <=, >=, ==
     */
-  override def compare(that:Rational): Int = {
-//find lcm and compare numer
-//    speed up by comparing if they are positive or negative
+  override def compare(that: Rational): Int = {
+    val l: Long = lcm(that)
+    val thisNumerMag: Long = (l / this.denom) * this.numer
+    val thatNumerMag: Long = (l / that.denom) * that.numer
+    thisNumerMag.compare(thatNumerMag)
   }
 
   /**
@@ -140,7 +152,10 @@ class Rational(n: Int, d:Int) extends Ordered[Rational]{
     * show it can be done this way
     */
   override def equals(that: Any): Boolean = {
-    ???
+    that match {
+      case rational: Rational => this.compare(rational) == 0
+      case _ => false
+    }
   }
 }
 
@@ -148,14 +163,18 @@ class Rational(n: Int, d:Int) extends Ordered[Rational]{
   * This is a way of extending the Int class with new methods. Think in terms of SOLID
   * this allows us to extend the class without it being open to modification
   *
-  *  Without these we can only do Rational(1/2) + 1 rather than 1 + Rational(1/2)
+  * Without these we can only do Rational(1/2) + 1 rather than 1 + Rational(1/2)
   *
   * This could be in a separate file and but left here as example
   * that we can have multiple objects/classes in the same file.
   */
 object IntUtils {
-  implicit class IntExtensions(i: Int) {
+
+  implicit class IntExtensions(i: Int){
     /** Use that adding a rational and an int is associative, i.e i + r == r + i */
-    ???
+    def + (rational:Rational) :Rational = {
+      rational + i
+    }
   }
+
 }
